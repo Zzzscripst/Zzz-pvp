@@ -1,1 +1,205 @@
+local a=game:GetService("Players")
+local b=game:GetService("RunService")
+local c=a.LocalPlayer
 
+local d=Instance.new("ScreenGui",c:WaitForChild("PlayerGui"))
+d.ResetOnSpawn=false
+
+local e=Instance.new("TextButton",d)
+e.Size=UDim2.new(0,60,0,60)
+e.Position=UDim2.new(0,20,0.5,0)
+e.BackgroundColor3=Color3.fromRGB(30,30,30)
+e.Text="Z"
+e.Font=Enum.Font.GothamBlack
+e.TextSize=28
+e.TextColor3=Color3.fromRGB(255,255,255)
+e.Active=true
+e.Draggable=true
+Instance.new("UICorner",e).CornerRadius=UDim.new(0,10)
+Instance.new("UIStroke",e).Color=Color3.fromRGB(150,150,150)
+
+local f=Instance.new("Frame",d)
+f.Size=UDim2.new(0,260,0,260)
+f.Position=UDim2.new(0.5,-130,0.5,-130)
+f.BackgroundColor3=Color3.fromRGB(0,0,0)
+f.Visible=false
+f.Active=true
+f.Draggable=true
+Instance.new("UICorner",f).CornerRadius=UDim.new(0,12)
+Instance.new("UIStroke",f).Color=Color3.fromRGB(150,150,150)
+
+local g=Instance.new("TextLabel",f)
+g.Size=UDim2.new(1,-40,0,30)
+g.Position=UDim2.new(0,10,0,0)
+g.Text="Pvp Laboratório"
+g.Font=Enum.Font.GothamBold
+g.TextColor3=Color3.new(1,1,1)
+g.BackgroundTransparency=1
+
+local h=Instance.new("TextButton",f)
+h.Size=UDim2.new(0,30,0,30)
+h.Position=UDim2.new(1,-30,0,0)
+h.Text="X"
+h.BackgroundTransparency=1
+h.TextColor3=Color3.new(1,1,1)
+
+local function i(j,k)
+local l=Instance.new("Frame",f)
+l.Size=UDim2.new(1,-20,0,40)
+l.Position=UDim2.new(0,10,0,k)
+l.BackgroundColor3=Color3.fromRGB(40,40,40)
+Instance.new("UICorner",l).CornerRadius=UDim.new(0,8)
+
+local m=Instance.new("TextLabel",l)
+m.Size=UDim2.new(0.6,0,1,0)
+m.Position=UDim2.new(0,10,0,0)
+m.Text=j
+m.Font=Enum.Font.GothamBold
+m.TextColor3=Color3.new(1,1,1)
+m.BackgroundTransparency=1
+
+local n=Instance.new("TextButton",l)
+n.Size=UDim2.new(0,50,0,25)
+n.Position=UDim2.new(1,-60,0.5,-12)
+n.Text=""
+n.BackgroundColor3=Color3.fromRGB(80,80,80)
+Instance.new("UICorner",n).CornerRadius=UDim.new(1,0)
+
+local o=Instance.new("Frame",n)
+o.Size=UDim2.new(0,20,0,20)
+o.Position=UDim2.new(0,2,0.5,-10)
+o.BackgroundColor3=Color3.new(1,1,1)
+Instance.new("UICorner",o).CornerRadius=UDim.new(1,0)
+
+local p=false
+n.MouseButton1Click:Connect(function()
+p=not p
+if p then
+n.BackgroundColor3=Color3.fromRGB(0,170,0)
+o.Position=UDim2.new(1,-22,0.5,-10)
+else
+n.BackgroundColor3=Color3.fromRGB(80,80,80)
+o.Position=UDim2.new(0,2,0.5,-10)
+end
+end)
+
+return function()return p end
+end
+
+local q=i("Auto Attack",50)
+local r=i("ESP",100)
+local s=i("Spin Bot",150)
+local t=i("Anchor",200)
+
+e.MouseButton1Click:Connect(function()
+f.Visible=not f.Visible
+end)
+
+h.MouseButton1Click:Connect(function()
+f.Visible=false
+end)
+
+b.RenderStepped:Connect(function()
+if c.Character and c.Character:FindFirstChild("HumanoidRootPart") then
+
+local u=c.Character.HumanoidRootPart
+
+if t() then
+local v=game:GetService("StarterPlayer"):FindFirstChild("StarterCharacterScripts")
+if v then
+local w=v:FindFirstChild("old_ragdoll")
+local x=v:FindFirstChild("ragdoll_controller")
+if w then w:Destroy() end
+if x then x:Destroy() end
+end
+
+local y=c.Character
+if y then
+local w=y:FindFirstChild("old_ragdoll",true)
+local x=y:FindFirstChild("ragdoll_controller",true)
+if w then w:Destroy() end
+if x then x:Destroy() end
+end
+
+u.Velocity=Vector3.new(0,0,0)
+u.RotVelocity=Vector3.new(0,0,0)
+end
+
+local z=nil
+local A=math.huge
+
+for _,B in pairs(a:GetPlayers()) do
+if B~=c and B.Character and B.Character:FindFirstChild("HumanoidRootPart") then
+local C=B.Character.HumanoidRootPart
+local D=(C.Position-u.Position).Magnitude
+if D<A then
+A=D
+z=C
+end
+end
+end
+
+if q() and z then
+u.Velocity=(z.Position-u.Position).Unit*60
+end
+
+if s() then
+u.CFrame=u.CFrame*CFrame.Angles(0,math.rad(25),0)
+end
+
+end
+end)
+
+b.RenderStepped:Connect(function()
+for _,B in pairs(a:GetPlayers()) do
+if B~=c and B.Character and B.Character:FindFirstChild("Head") then
+
+local E=B.Character
+local F=E.Head
+local G=F:FindFirstChild("ESP")
+
+if r() then
+
+if not G then
+G=Instance.new("BillboardGui",F)
+G.Name="ESP"
+G.Size=UDim2.new(0,100,0,40)
+G.AlwaysOnTop=true
+
+local H=Instance.new("TextLabel",G)
+H.Size=UDim2.new(1,0,1,0)
+H.BackgroundTransparency=1
+H.TextColor3=Color3.fromRGB(0,0,0)
+H.Font=Enum.Font.GothamBold
+H.TextScaled=true
+end
+
+local H=G:FindFirstChildOfClass("TextLabel")
+if H and c.Character then
+local I=(F.Position-c.Character.Head.Position).Magnitude
+H.Text=math.floor(I).."m"
+end
+
+for _,J in pairs(E:GetChildren()) do
+if J:IsA("BasePart") then
+J.Color=Color3.fromRGB(0,0,0)
+J.Material=Enum.Material.Neon
+end
+end
+
+if not E:FindFirstChild("HL") then
+local K=Instance.new("Highlight",E)
+K.Name="HL"
+K.FillColor=Color3.fromRGB(0,0,0)
+K.OutlineColor=Color3.fromRGB(0,0,0)
+end
+
+else
+if G then G:Destroy() end
+local K=E:FindFirstChild("HL")
+if K then K:Destroy() end
+end
+
+end
+end
+end)
