@@ -1,0 +1,205 @@
+local player = game.Players.LocalPlayer
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+gui.ResetOnSpawn = false
+
+-- 🔘 BOTÃO BOLINHA COM IMAGEM NOVA
+local openBtn = Instance.new("ImageButton", gui)
+openBtn.Size = UDim2.new(0,50,0,50)
+openBtn.Position = UDim2.new(0,20,0.5,0)
+openBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+openBtn.Image = "rbxassetid://78669017315346"
+openBtn.ScaleType = Enum.ScaleType.Fit
+
+Instance.new("UICorner", openBtn).CornerRadius = UDim.new(1,0)
+
+-- 🧱 PAINEL
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0,260,0,240)
+frame.Position = UDim2.new(0.5,-130,0.5,-120)
+frame.BackgroundColor3 = Color3.fromRGB(0,0,0)
+frame.Visible = false
+frame.Active = true
+frame.Draggable = true
+
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0,12)
+
+-- 🩶 BORDA CINZA
+local stroke = Instance.new("UIStroke", frame)
+stroke.Color = Color3.fromRGB(120,120,120)
+stroke.Thickness = 2
+
+-- 🏷️ TÍTULO
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1,-40,0,30)
+title.Position = UDim2.new(0,10,0,0)
+title.Text = "Pvp Laboratório"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.TextColor3 = Color3.fromRGB(255,255,255)
+title.BackgroundTransparency = 1
+title.TextXAlignment = Enum.TextXAlignment.Left
+
+-- ❌ FECHAR
+local close = Instance.new("TextButton", frame)
+close.Size = UDim2.new(0,30,0,30)
+close.Position = UDim2.new(1,-30,0,0)
+close.Text = "X"
+close.Font = Enum.Font.GothamBold
+close.TextColor3 = Color3.fromRGB(255,255,255)
+close.BackgroundTransparency = 1
+
+-- 🔘 FUNÇÃO TOGGLE
+local function criarToggle(texto, posY)
+	local bg = Instance.new("Frame", frame)
+	bg.Size = UDim2.new(1,-20,0,40)
+	bg.Position = UDim2.new(0,10,0,posY)
+	bg.BackgroundColor3 = Color3.fromRGB(40,40,40)
+
+	Instance.new("UICorner", bg).CornerRadius = UDim.new(0,8)
+
+	local txt = Instance.new("TextLabel", bg)
+	txt.Size = UDim2.new(0.7,0,1,0)
+	txt.Position = UDim2.new(0,10,0,0)
+	txt.Text = texto
+	txt.Font = Enum.Font.GothamBold
+	txt.TextColor3 = Color3.fromRGB(255,255,255)
+	txt.BackgroundTransparency = 1
+	txt.TextXAlignment = Enum.TextXAlignment.Left
+
+	local toggle = Instance.new("TextButton", bg)
+	toggle.Size = UDim2.new(0,50,0,25)
+	toggle.Position = UDim2.new(1,-60,0.5,-12)
+	toggle.BackgroundColor3 = Color3.fromRGB(80,80,80)
+	toggle.Text = ""
+
+	Instance.new("UICorner", toggle).CornerRadius = UDim.new(1,0)
+
+	local circle = Instance.new("Frame", toggle)
+	circle.Size = UDim2.new(0,20,0,20)
+	circle.Position = UDim2.new(0,2,0.5,-10)
+	circle.BackgroundColor3 = Color3.fromRGB(255,255,255)
+
+	Instance.new("UICorner", circle).CornerRadius = UDim.new(1,0)
+
+	local state = false
+
+	toggle.MouseButton1Click:Connect(function()
+		state = not state
+		
+		if state then
+			toggle.BackgroundColor3 = Color3.fromRGB(0,170,0)
+			circle.Position = UDim2.new(1,-22,0.5,-10)
+		else
+			toggle.BackgroundColor3 = Color3.fromRGB(80,80,80)
+			circle.Position = UDim2.new(0,2,0.5,-10)
+		end
+	end)
+
+	return function() return state end
+end
+
+-- ⚔️ AUTO ATTACK
+local getAuto = criarToggle("Auto Attack", 50)
+
+-- 👁️ ESP
+local getEsp = criarToggle("ESP", 100)
+
+-- 🏷️ CRÉDITOS
+local credit = Instance.new("TextLabel", frame)
+credit.Size = UDim2.new(1,0,0,20)
+credit.Position = UDim2.new(0,0,1,-20)
+credit.Text = "Feito Por Zzz.oficial"
+credit.Font = Enum.Font.GothamBold
+credit.TextSize = 12
+credit.TextColor3 = Color3.fromRGB(150,150,150)
+credit.BackgroundTransparency = 1
+
+-- 🔁 ABRIR / FECHAR
+openBtn.MouseButton1Click:Connect(function()
+	frame.Visible = not frame.Visible
+end)
+
+close.MouseButton1Click:Connect(function()
+	frame.Visible = false
+end)
+
+-- ⚔️ AUTO ATTACK (FLY)
+local RunService = game:GetService("RunService")
+
+RunService.RenderStepped:Connect(function()
+	if getAuto() and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+		
+		local hrp = player.Character.HumanoidRootPart
+		
+		local closest = nil
+		local dist = math.huge
+
+		for _,plr in pairs(game.Players:GetPlayers()) do
+			if plr ~= player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+				local d = (plr.Character.HumanoidRootPart.Position - hrp.Position).Magnitude
+				if d < dist then
+					dist = d
+					closest = plr
+				end
+			end
+		end
+
+		if closest and closest.Character then
+			local targetPos = closest.Character.HumanoidRootPart.Position
+			hrp.Velocity = (targetPos - hrp.Position).Unit * 60
+
+			if dist < 10 then
+				local tool = player.Character:FindFirstChildOfClass("Tool")
+				if tool then tool:Activate() end
+			end
+		end
+	else
+		if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+			player.Character.HumanoidRootPart.Velocity = Vector3.zero
+		end
+	end
+end)
+
+-- 👁️ ESP PRETO
+task.spawn(function()
+	while true do
+		task.wait(1)
+		if getEsp() then
+			for _,plr in pairs(game.Players:GetPlayers()) do
+				if plr ~= player and plr.Character and plr.Character:FindFirstChild("Head") then
+					
+					if not plr.Character.Head:FindFirstChild("ESP") then
+						local bill = Instance.new("BillboardGui", plr.Character.Head)
+						bill.Name = "ESP"
+						bill.Size = UDim2.new(0,100,0,40)
+						bill.AlwaysOnTop = true
+
+						local txt = Instance.new("TextLabel", bill)
+						txt.Size = UDim2.new(1,0,1,0)
+						txt.BackgroundTransparency = 1
+						txt.TextColor3 = Color3.new(0,0,0)
+						txt.Font = Enum.Font.GothamBold
+						txt.TextScaled = true
+
+						task.spawn(function()
+							while bill.Parent do
+								task.wait(0.2)
+								if player.Character and plr.Character then
+									local d = (plr.Character.Head.Position - player.Character.Head.Position).Magnitude
+									txt.Text = math.floor(d).."m"
+								end
+							end
+						end)
+					end
+				end
+			end
+		else
+			for _,plr in pairs(game.Players:GetPlayers()) do
+				if plr.Character and plr.Character:FindFirstChild("Head") then
+					local espGui = plr.Character.Head:FindFirstChild("ESP")
+					if espGui then espGui:Destroy() end
+				end
+			end
+		end
+	end
+end)
